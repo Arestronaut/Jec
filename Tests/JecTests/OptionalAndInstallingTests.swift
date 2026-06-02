@@ -36,7 +36,7 @@ struct OptionalAndInstallingTests {
                 }
             }
         }
-        await Container.$current.withValue(Container()) {
+        Container.$current.withValue(Container()) {
             let container = Container().installing {
                 EndpointAssembly(endpoint: "https://chained")
             }
@@ -55,7 +55,7 @@ struct OptionalAndInstallingTests {
                 container.register(Int.self) { _ in 42 }
             }
         }
-        await Container.$current.withValue(Container()) {
+        Container.$current.withValue(Container()) {
             let container = Container().installing { A(); B() }
             #expect(container.resolve(String.self) == "from-A")
             #expect(container.resolve(Int.self) == 42)

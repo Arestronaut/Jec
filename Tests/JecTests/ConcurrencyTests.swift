@@ -50,12 +50,12 @@ struct ConcurrencyTests {
         }
     }
 
-    @Test func containerCurrentTaskLocalOverrideIsRespectedInChildTasks() async throws {
+    @Test func containerCurrentTaskLocalOverrideIsRespectedInChildTasks() async {
         let testContainer = Container()
         testContainer.register(APIClient.self, scope: .singleton) { _ in
             LiveAPIClient(endpoint: "https://test-override")
         }
-        try await Container.$current.withValue(testContainer) {
+        await Container.$current.withValue(testContainer) {
             // From a child Task, @Injected and Container.current must resolve from testContainer.
             let endpoint = await Task {
                 Container.current.resolve(APIClient.self).endpoint

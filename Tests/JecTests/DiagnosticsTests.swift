@@ -16,13 +16,13 @@ struct DiagnosticsTests {
     /// When `tryResolve` fails for a missing key, the error carries the chain of
     /// ancestor types whose factories were on the stack at the moment of failure.
     /// We inject the stack directly to keep the test independent of factory-trap behaviour.
-    @Test func unregisteredErrorCarriesAncestorChain() async {
+    @Test func unregisteredErrorCarriesAncestorChain() {
         let container = Container()
         let stack: [RegistrationKey] = [
             RegistrationKey(TopNode.self, name: nil),
             RegistrationKey(MiddleNode.self, name: nil),
         ]
-        await Container.$resolutionStack.withValue(stack) {
+        Container.$resolutionStack.withValue(stack) {
             do {
                 _ = try container.tryResolve(DeepLeaf.self)
                 #expect(Bool(false), "expected throw")
@@ -68,7 +68,7 @@ struct DiagnosticsTests {
     /// Cycle detection fires when the key being resolved is already in the active
     /// resolution stack — proving the mechanism without needing recursive factories
     /// (which would trap via `resolve` before the test could observe the throw).
-    @Test func cycleDetectedWhenKeyAlreadyInStack() async {
+    @Test func cycleDetectedWhenKeyAlreadyInStack() {
         let container = Container()
         container.register(TopNode.self) { _ in TopNode(middle: MiddleNode(leaf: DeepLeaf(label: ""))) }
 
@@ -76,7 +76,7 @@ struct DiagnosticsTests {
             RegistrationKey(TopNode.self, name: nil),   // already on stack
             RegistrationKey(MiddleNode.self, name: nil),
         ]
-        await Container.$resolutionStack.withValue(stack) {
+        Container.$resolutionStack.withValue(stack) {
             do {
                 _ = try container.tryResolve(TopNode.self)   // cycle: TopNode already in stack
                 #expect(Bool(false), "expected cycle")

@@ -4,14 +4,14 @@ import Testing
 
 @Suite("Scope — .scoped lifetime via TaskLocal")
 struct ScopeTests {
-    @Test func scopedInstancesReusedWithinABlock() async throws {
+    @Test func scopedInstancesReusedWithinABlock() async {
         let counter = Counter()
-        try await withFreshContainer { container in
+        await withFreshContainer { container in
             container.register(APIClient.self, scope: .scoped) { _ in
                 counter.increment()
                 return CountingAPIClient()
             }
-            try await container.withScope {
+            container.withScope {
                 let a = container.resolve(APIClient.self) as! CountingAPIClient
                 let b = container.resolve(APIClient.self) as! CountingAPIClient
                 #expect(a === b)
@@ -29,16 +29,16 @@ struct ScopeTests {
         }
     }
 
-    @Test func nestedScopesGetIndependentBuckets() async throws {
+    @Test func nestedScopesGetIndependentBuckets() async {
         let counter = Counter()
-        try await withFreshContainer { container in
+        await withFreshContainer { container in
             container.register(APIClient.self, scope: .scoped) { _ in
                 counter.increment()
                 return CountingAPIClient()
             }
-            try await container.withScope(.named("outer")) {
+            container.withScope(.named("outer")) {
                 let outer = container.resolve(APIClient.self) as! CountingAPIClient
-                try await container.withScope(.named("inner")) {
+                container.withScope(.named("inner")) {
                     let inner = container.resolve(APIClient.self) as! CountingAPIClient
                     #expect(inner !== outer)
                 }
@@ -50,11 +50,11 @@ struct ScopeTests {
         }
     }
 
-    @Test func scopePropagatesToChildTasks() async throws {
-        try await withFreshContainer { container in
+    @Test func scopePropagatesToChildTasks() async {
+        await withFreshContainer { container in
             container.register(APIClient.self, scope: .scoped) { _ in CountingAPIClient() }
 
-            try await container.withScope {
+            await container.withScope {
                 let primary = container.resolve(APIClient.self) as! CountingAPIClient
                 let viaChildTask = await Task {
                     container.resolve(APIClient.self) as! CountingAPIClient
