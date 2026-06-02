@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  macos:
+    name: Test on macOS (Swift 6.2)
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Show Swift version
+        run: swift --version
+
+      - name: Cache SwiftPM
+        uses: actions/cache@v4
+        with:
+          path: |
+            .build
+            ~/Library/Caches/org.swift.swiftpm
+            ~/Library/org.swift.swiftpm
+          key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
+          restore-keys: |
+            ${{ runner.os }}-spm-
+
+      - name: Build (strict concurrency)
+        run: swift build -Xswiftc -strict-concurrency=complete
+
+      - name: Test (strict concurrency)
+        run: swift test -Xswiftc -strict-concurrency=complete
+
+  linux:
+    name: Test on Linux (Swift 6.2)
+    runs-on: ubuntu-latest
+    container:
+      image: swift:6.2-jammy
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Show Swift version
+        run: swift --version
+
+      - name: Build core target (Linux skips jecSwiftUI)
+        run: swift build --target jec -Xswiftc -strict-concurrency=complete
+
+      - name: Test core suites
+        run: swift test --filter jecTests -Xswiftc -strict-concurrency=complete
