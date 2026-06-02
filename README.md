@@ -1,7 +1,5 @@
 # Jec
 
-[![CI](https://github.com/OWNER/Jec/actions/workflows/ci.yml/badge.svg)](https://github.com/OWNER/Jec/actions/workflows/ci.yml)
-
 A modern Swift 6.2 dependency injection container. Strict-concurrency clean, macro-powered, and small enough to read in one sitting.
 
 ```swift
