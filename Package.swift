@@ -39,8 +39,12 @@ let package = Package(
             name: "JecTests",
             dependencies: [
                 "Jec",
-                "JecMacros",
-                .product(name: "SwiftSyntaxMacrosTestSupport", package: "swift-syntax"),
+                .target(name: "JecMacros", condition: .when(platforms: [.macOS])),
+                .product(
+                    name: "SwiftSyntaxMacrosTestSupport",
+                    package: "swift-syntax",
+                    condition: .when(platforms: [.macOS])
+                ),
             ]
         ),
         .testTarget(

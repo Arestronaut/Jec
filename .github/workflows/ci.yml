@@ -53,3 +53,23 @@ jobs:
 
       - name: Test core suites
         run: swift test --filter JecTests -Xswiftc -strict-concurrency=complete
+
+  ios-build:
+    name: Build for iOS Simulator
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Show Swift version
+        run: swift --version
+
+      # Library build only — macro-expansion unit tests require the macOS host
+      # (SwiftSyntax ships no iOS slice), and Xcode's SwiftPM integration does
+      # not honor `.when(platforms:)` for testable macro plugin builds. Runtime
+      # macro behavior (@Inject, @Module, @Injectable) is exercised by the
+      # macOS and Linux test jobs above.
+      - name: Build Jec
+        run: xcodebuild build -scheme Jec -destination 'generic/platform=iOS Simulator'
+
+      - name: Build JecSwiftUI
+        run: xcodebuild build -scheme JecSwiftUI -destination 'generic/platform=iOS Simulator'

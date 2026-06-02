@@ -74,3 +74,14 @@ try await container.withScope(.named("request-42")) {
     #expect(a === b)
 }
 ```
+
+## Macro tests run only on macOS
+
+`Jec`'s macro plugin (``Inject(name:)``, ``Injectable()``, ``Module()``) is a SwiftPM `.macro` target — it links `SwiftSyntax`, which Apple ships only as a macOS host slice. The package gates the macro plugin and `SwiftSyntaxMacrosTestSupport` to macOS in the test target so iOS / tvOS / watchOS / visionOS schemes don't try (and fail) to link them.
+
+The split is:
+
+- **Macro-expansion tests** (using `assertMacroExpansion`) live in `MacroTests.swift`, `InjectableExpansionTests.swift`, and `ModuleExpansionTests.swift`. Each file is wrapped in `#if os(macOS)` and only runs when the host platform itself is macOS.
+- **Runtime macro tests** (declaring `@Inject var api: APIClient`, installing `@Module` modules, registering `@Injectable` types) live in their own files with no SwiftSyntax imports. They run on every supported platform, because macro expansion happens at compile time on the host even when the resulting code is compiled for iOS or Linux.
+
+Practically: choose the **My Mac** destination when iterating on the macro plugin itself in Xcode. iOS / tvOS / watchOS / visionOS schemes still verify the expanded runtime behavior of every macro.

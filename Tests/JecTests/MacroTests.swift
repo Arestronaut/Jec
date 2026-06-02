@@ -1,3 +1,4 @@
+#if os(macOS)
 import Foundation
 import SwiftSyntax
 import SwiftSyntaxMacros
@@ -67,19 +68,4 @@ struct MacroTests {
         )
     }
 }
-
-// Real-world expansion smoke test (not via macro test harness — we just compile-and-run).
-@Suite("Macros — @Inject runtime smoke")
-struct MacroRuntimeTests {
-    struct ViewModel: Sendable {
-        @Inject var api: APIClient
-    }
-
-    @Test func macroExpandedAccessorResolvesViaContainer() async {
-        await withFreshContainer { container in
-            container.register(APIClient.self, scope: .singleton) { _ in LiveAPIClient(endpoint: "https://macro") }
-            let vm = ViewModel()
-            #expect(vm.api.endpoint == "https://macro")
-        }
-    }
-}
+#endif

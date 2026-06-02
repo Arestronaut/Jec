@@ -34,7 +34,7 @@ struct ViewModel: Sendable {
 Swift Package Manager — `Package.swift`:
 
 ```swift
-.package(url: "https://github.com/<you>/Jec.git", from: "0.1.0"),
+.package(url: "https://github.com/Arestronaut/Jec", from: "0.1.0"),
 ```
 
 Platforms: macOS 15, iOS 18, tvOS 18, watchOS 11, visionOS 2. Swift 6.2 toolchain required.
