@@ -3,7 +3,7 @@ import CompilerPluginSupport
 import PackageDescription
 
 let package = Package(
-    name: "jec",
+    name: "Jec",
     platforms: [
         .macOS(.v15),
         .iOS(.v18),
@@ -12,15 +12,15 @@ let package = Package(
         .visionOS(.v2),
     ],
     products: [
-        .library(name: "jec", targets: ["jec"]),
-        .library(name: "jecSwiftUI", targets: ["jecSwiftUI"]),
+        .library(name: "Jec", targets: ["Jec"]),
+        .library(name: "JecSwiftUI", targets: ["JecSwiftUI"]),
     ],
     dependencies: [
         .package(url: "https://github.com/swiftlang/swift-syntax.git", from: "601.0.0"),
     ],
     targets: [
         .macro(
-            name: "jecMacros",
+            name: "JecMacros",
             dependencies: [
                 .product(name: "SwiftSyntax", package: "swift-syntax"),
                 .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
@@ -28,24 +28,24 @@ let package = Package(
             ]
         ),
         .target(
-            name: "jec",
-            dependencies: ["jecMacros"]
+            name: "Jec",
+            dependencies: ["JecMacros"]
         ),
         .target(
-            name: "jecSwiftUI",
-            dependencies: ["jec"]
+            name: "JecSwiftUI",
+            dependencies: ["Jec"]
         ),
         .testTarget(
-            name: "jecTests",
+            name: "JecTests",
             dependencies: [
-                "jec",
-                "jecMacros",
+                "Jec",
+                "JecMacros",
                 .product(name: "SwiftSyntaxMacrosTestSupport", package: "swift-syntax"),
             ]
         ),
         .testTarget(
-            name: "jecSwiftUITests",
-            dependencies: ["jec", "jecSwiftUI"]
+            name: "JecSwiftUITests",
+            dependencies: ["Jec", "JecSwiftUI"]
         ),
     ]
 )

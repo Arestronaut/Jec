@@ -1,11 +1,11 @@
-# jec
+# Jec
 
-[![CI](https://github.com/OWNER/jec/actions/workflows/ci.yml/badge.svg)](https://github.com/OWNER/jec/actions/workflows/ci.yml)
+[![CI](https://github.com/OWNER/Jec/actions/workflows/ci.yml/badge.svg)](https://github.com/OWNER/Jec/actions/workflows/ci.yml)
 
 A modern Swift 6.2 dependency injection container. Strict-concurrency clean, macro-powered, and small enough to read in one sitting.
 
 ```swift
-import jec
+import Jec
 
 // 1. Register
 Container.default.register(APIClient.self, scope: .singleton) { _ in
@@ -34,7 +34,7 @@ struct ViewModel: Sendable {
 Swift Package Manager — `Package.swift`:
 
 ```swift
-.package(url: "https://github.com/<you>/jec.git", from: "0.1.0"),
+.package(url: "https://github.com/<you>/Jec.git", from: "0.1.0"),
 ```
 
 Platforms: macOS 15, iOS 18, tvOS 18, watchOS 11, visionOS 2. Swift 6.2 toolchain required.
@@ -187,12 +187,12 @@ The `install` block accepts plain assemblies, `if`/`else`, optional bindings, an
 
 ## SwiftUI
 
-Add the `jecSwiftUI` library product alongside `jec` and you get an `@Environment` slot plus two SwiftUI-aware property wrappers.
+Add the `JecSwiftUI` library product alongside `Jec` and you get an `@Environment` slot plus two SwiftUI-aware property wrappers.
 
 ```swift
 import SwiftUI
-import jec
-import jecSwiftUI
+import Jec
+import JecSwiftUI
 
 @main struct MyApp: App {
     let container: Container = {

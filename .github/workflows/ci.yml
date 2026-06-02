@@ -48,8 +48,8 @@ jobs:
       - name: Show Swift version
         run: swift --version
 
-      - name: Build core target (Linux skips jecSwiftUI)
-        run: swift build --target jec -Xswiftc -strict-concurrency=complete
+      - name: Build core target (Linux skips JecSwiftUI)
+        run: swift build --target Jec -Xswiftc -strict-concurrency=complete
 
       - name: Test core suites
-        run: swift test --filter jecTests -Xswiftc -strict-concurrency=complete
+        run: swift test --filter JecTests -Xswiftc -strict-concurrency=complete
