@@ -34,14 +34,14 @@ struct RegressionTests {
         }
     }
 
-    @Test func slowScopedFactoryReturnsOneInstancePerScope() async throws {
+    @Test func slowScopedFactoryReturnsOneInstancePerScope() async {
         let factoryRuns = Counter()
-        try await withFreshContainer { container in
+        await withFreshContainer { container in
             container.register(CountingAPIClient.self, scope: .scoped) { _ in
                 factoryRuns.increment()
                 return CountingAPIClient()
             }
-            try await container.withScope {
+            await container.withScope {
                 let identities = await withTaskGroup(of: ObjectIdentifier.self) { group in
                     for _ in 0..<200 {
                         group.addTask { ObjectIdentifier(container.resolve(CountingAPIClient.self)) }
@@ -57,15 +57,15 @@ struct RegressionTests {
 
     // MARK: - #2: observer reports the true scope inside a withScope block
 
-    @Test func singletonHitInsideWithScopeReportsCacheSingleton() async throws {
-        try await withFreshContainer { container in
+    @Test func singletonHitInsideWithScopeReportsCacheSingleton() async {
+        await withFreshContainer { container in
             container.register(APIClient.self, scope: .singleton) { _ in LiveAPIClient() }
             _ = container.resolve(APIClient.self)   // prime cache
 
             let events = Events()
             _ = container.onResolve { events.append($0) }
 
-            try await container.withScope {
+            container.withScope {
                 _ = container.resolve(APIClient.self)
             }
             let event = events.snapshot()[0]
@@ -74,12 +74,12 @@ struct RegressionTests {
         }
     }
 
-    @Test func scopedHitInsideWithScopeReportsCacheScoped() async throws {
-        try await withFreshContainer { container in
+    @Test func scopedHitInsideWithScopeReportsCacheScoped() async {
+        await withFreshContainer { container in
             container.register(CountingAPIClient.self, scope: .scoped) { _ in CountingAPIClient() }
             let events = Events()
             _ = container.onResolve { events.append($0) }
-            try await container.withScope {
+            container.withScope {
                 _ = container.resolve(CountingAPIClient.self)   // factory
                 _ = container.resolve(CountingAPIClient.self)   // cacheScoped
             }
@@ -92,10 +92,10 @@ struct RegressionTests {
 
     // MARK: - #3: re-register clears scope storage on current Task
 
-    @Test func reRegisteringDuringActiveScopeDropsStaleScopedValue() async throws {
-        try await withFreshContainer { container in
+    @Test func reRegisteringDuringActiveScopeDropsStaleScopedValue() async {
+        await withFreshContainer { container in
             container.register(APIClient.self, scope: .scoped) { _ in LiveAPIClient(endpoint: "v1") }
-            try await container.withScope {
+            container.withScope {
                 #expect(container.resolve(APIClient.self).endpoint == "v1")
                 // Re-register inside the same task's scope — old cache entry should be cleared.
                 container.register(APIClient.self, scope: .scoped) { _ in LiveAPIClient(endpoint: "v2") }
@@ -104,10 +104,10 @@ struct RegressionTests {
         }
     }
 
-    @Test func unregisteringDuringActiveScopeClearsScopedCache() async throws {
-        try await withFreshContainer { container in
+    @Test func unregisteringDuringActiveScopeClearsScopedCache() async {
+        await withFreshContainer { container in
             container.register(APIClient.self, scope: .scoped) { _ in LiveAPIClient(endpoint: "first") }
-            try await container.withScope {
+            container.withScope {
                 _ = container.resolve(APIClient.self)
                 container.unregister(APIClient.self)
                 #expect(throws: ResolutionError.self) {
